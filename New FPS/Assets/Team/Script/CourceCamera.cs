@@ -4,15 +4,15 @@ using System.Collections.Generic;
 
 public class CourceCamera : MonoBehaviour
 {
-    GameObject m_Player;
+    private Player m_Player;
     // Use this for initialization
     void Start () {
-        m_Player = GameObject.Find("Player");
+        m_Player = GameObject.Find("Player").GetComponent<Player>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        // 現在のカメラの向きからプレイヤーの向きベクトルまで回転させる。
-        transform.localRotation = Quaternion.FromToRotation(transform.forward,m_Player.GetComponent<Player>().Direction);
+        transform.localPosition = m_Player.transform.localPosition;
+        transform.localRotation = m_Player.transform.localRotation;
 	}
 }
