@@ -20,6 +20,13 @@ public class CourceDef : MonoBehaviour {
     public Vector3 CourceVecDir { get { return m_CourceVecDir; } }
     private GameObject m_Range;           // コース定義の範囲。
     public GameObject Range{ get { return m_Range; } }
+    [Tooltip("そのノードでバトルがあるか。")]
+    [SerializeField]
+    private bool m_IsBattle = false;
+    public bool IsBattlle
+    {
+        get { return m_IsBattle; }
+    }
 
     // Use this for initialization
     void OnEnable()

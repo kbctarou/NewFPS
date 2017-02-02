@@ -9,6 +9,7 @@ public class Player : MonoBehaviour {
     public GameObject m_BulletOriginal;
     public GameObject m_BulletSEOriginal;
     InputComponent m_Input = new KeyBoardComponent();
+    float m_ShotRotationMax = Mathf.Deg2Rad * 160.0f;   // 弾の射角の限界。
     float RotationSpeed = 20.0f;    // 弾の射角の回転速度。
     Quaternion m_ShotQuat = new Quaternion();  // 弾の射角。
     Quaternion m_PrevRotation;  // 回転補間するときに回転前のクォータニオンを保存するための入れ物。
@@ -20,7 +21,6 @@ public class Player : MonoBehaviour {
     {
         get { return m_Direction; }
     }
-
     [SerializeField]
     private float m_MoveSpeed = 1.0f;
 
@@ -63,19 +63,20 @@ public class Player : MonoBehaviour {
     {
         if (m_NowCource.Count == 1)
         {
-            Debug.Log("Count1");
             // 現在のコースに射影。
             //Vector3 PrevDirection = m_Direction;
             m_Direction = m_NowCource[0].CourceVecDir;
             m_PrevRotation = transform.localRotation;
             m_TargetRotation = transform.localRotation * Quaternion.FromToRotation(/*PrevDirection*/transform.forward, m_Direction);
-            m_ShotQuat *= m_TargetRotation;    // 弾の射角をプレイヤーが回転した分回す。
             m_IsRotation = true;
             m_RotaCounter = 0.0f;
+            if (m_NowCource[0].IsBattlle)
+            {
+                m_ModeState = ModeState.Battle;
+            }
         }
         else if (m_NowCource.Count == 2)
         {
-            Debug.Log("Count2");
             // コースが重なったとき。
             //Vector3 PrevDirection = m_Direction;
             Vector3 Vec1 = m_NowCource[0].CourceVecDir;
@@ -84,7 +85,6 @@ public class Player : MonoBehaviour {
             m_Direction = Vector3.Normalize(Vec1 + Vec2);
             m_PrevRotation = transform.localRotation;
             m_TargetRotation = transform.localRotation * Quaternion.FromToRotation(/*PrevDirection*/transform.forward, m_Direction);
-            m_ShotQuat *= m_TargetRotation;    // 弾の射角をプレイヤーが回転した分回す。
             m_IsRotation = true;
             m_RotaCounter = 0.0f;
         }
@@ -106,6 +106,7 @@ public class Player : MonoBehaviour {
                 break;
             case ModeState.Battle:
                 // バトル中。
+                Battle();
                 break;
         }
     }
@@ -117,6 +118,7 @@ public class Player : MonoBehaviour {
             m_RotaCounter += m_RotaSpeed;
             // 現在の向きから目標の向きベクトルまで回転させる。
             transform.localRotation = Quaternion.Lerp(m_PrevRotation,m_TargetRotation, m_RotaCounter);
+            m_ShotQuat *= transform.localRotation;    // 弾の射角をプレイヤーが回転した分回す。
             //transform.localRotation *= Quaternion.FromToRotation(transform.forward, m_Direction);
             Debug.Log(Mathf.Abs(Quaternion.Angle(transform.localRotation, m_TargetRotation)));
             if (Mathf.Abs(Quaternion.Angle(transform.localRotation, m_TargetRotation)) <= 0.0001f)
@@ -130,7 +132,14 @@ public class Player : MonoBehaviour {
         {
             // プレイヤーの向きに移動量をかけて加算。
             transform.localPosition += transform.forward * m_MoveSpeed;
+            // 歩いているときの視線の上下を再現。
+            
         }
+    }
+
+    private void Battle()
+    {
+
     }
 
     // 弾の射角調整関数。
@@ -155,7 +164,10 @@ public class Player : MonoBehaviour {
             quat *= Quaternion.AngleAxis(Mathf.Deg2Rad * RotationSpeed, new Vector3(1.0f, 0.0f, 0.0f));
         }
 
-        // 回転量を保存。
-        m_ShotQuat = quat;
+        //if (m_Direction < Mathf.Abs(m_ShotRotationMax) / 2)
+        //{
+            // 回転量を保存。
+            m_ShotQuat = quat;
+        //}
     }
 }
