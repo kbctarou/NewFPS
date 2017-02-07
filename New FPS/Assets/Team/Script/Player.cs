@@ -9,9 +9,17 @@ public class Player : MonoBehaviour {
     public GameObject m_BulletOriginal;
     public GameObject m_BulletSEOriginal;
     InputComponent m_Input = new KeyBoardComponent();
-    float m_ShotRotationMax = Mathf.Deg2Rad * 160.0f;   // 弾の射角の限界。
+    [Tooltip("弾の射角の限界(横)")]
+    [SerializeField]
+    private float m_ShotRotaMax_Y = 45.0f;   // 弾の射角の限界(横)。
+    [Tooltip("弾の射角の限界(横)")]
+    [SerializeField]
+    private float m_ShotRotaMax_X = 45.0f;   // 弾の射角の限界(縦)。
     float RotationSpeed = 20.0f;    // 弾の射角の回転速度。
-    Quaternion m_ShotQuat = new Quaternion();  // 弾の射角。
+    Quaternion m_LocalShotQuat_Y = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);  // 弾の射角(Y軸回転)。
+    Quaternion m_LocalShotQuat_X = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);  // 弾の射角(X軸回転)。
+    Quaternion m_LocalShotQuat = new Quaternion(0.0f,0.0f,0.0f,1.0f);  // 弾の射角(射角のみの回転)。
+    Quaternion m_ShotQuat = new Quaternion();  // 弾の射角(射角にプレイヤーの回転をかけた回転)。
     Quaternion m_PrevRotation;  // 回転補間するときに回転前のクォータニオンを保存するための入れ物。
     Quaternion m_TargetRotation;    // 回転補間するときの目標点。
     float m_RotaSpeed = 0.1f;   // プレイヤーの回転速度。
@@ -118,13 +126,10 @@ public class Player : MonoBehaviour {
             m_RotaCounter += m_RotaSpeed;
             // 現在の向きから目標の向きベクトルまで回転させる。
             transform.localRotation = Quaternion.Lerp(m_PrevRotation,m_TargetRotation, m_RotaCounter);
-            m_ShotQuat *= transform.localRotation;    // 弾の射角をプレイヤーが回転した分回す。
             //transform.localRotation *= Quaternion.FromToRotation(transform.forward, m_Direction);
-            Debug.Log(Mathf.Abs(Quaternion.Angle(transform.localRotation, m_TargetRotation)));
             if (Mathf.Abs(Quaternion.Angle(transform.localRotation, m_TargetRotation)) <= 0.0001f)
             {
                 // 回転終了か。
-                Debug.Log("回転終了。");
                 m_IsRotation = false;
             }
         }
@@ -145,7 +150,8 @@ public class Player : MonoBehaviour {
     // 弾の射角調整関数。
     private void ShotDirAdjustment()
     {
-        Quaternion quat = m_ShotQuat;
+
+        Quaternion quat = m_LocalShotQuat_Y;
         // キー判定。
         if (m_Input.IsPress_Right())
         {
@@ -155,6 +161,31 @@ public class Player : MonoBehaviour {
         {
             quat *= Quaternion.AngleAxis(Mathf.Deg2Rad * -RotationSpeed, new Vector3(0.0f, 1.0f, 0.0f));
         }
+        //Matrix4x4 Init = new Matrix4x4();
+        //Init.SetTRS(new Vector3(0.0f, 0.0f, 0.0f), new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vector3(1.0f, 1.0f, 1.0f));
+        //Init.SetColumn(0, new Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+        //Init.SetColumn(1, new Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+        //Init.SetColumn(2, new Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+
+        //Matrix4x4 Rota = new Matrix4x4();
+        //Rota.SetTRS(new Vector3(0.0f, 0.0f, 0.0f), m_LocalShotQuat * quat, new Vector3(1.0f, 1.0f, 1.0f));
+        //// Y軸回転のみ残す。
+        //Rota.SetColumn(0, new Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+        //Rota.SetColumn(2, new Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+
+        //Vector3 work = Init.MultiplyVector(new Vector3(0.0f,0.0f,1.0f));
+        //Vector3 work2 = Rota.MultiplyVector(new Vector3(0.0f, 0.0f, 1.0f));
+
+        //Debug.Log(Vector3.Angle(work, work2));
+        if (Quaternion.Angle(Quaternion.identity, quat) < Mathf.Abs(m_ShotRotaMax_Y) / 2)
+        {
+            Debug.Log("横回転量保存。");
+            // 横方向の回転量を保存。
+            m_LocalShotQuat_Y = quat;
+        }
+
+        quat = m_LocalShotQuat_X;
+
         if (m_Input.IsPress_Up())
         {
             quat *= Quaternion.AngleAxis(Mathf.Deg2Rad * -RotationSpeed, new Vector3(1.0f, 0.0f, 0.0f));
@@ -164,10 +195,25 @@ public class Player : MonoBehaviour {
             quat *= Quaternion.AngleAxis(Mathf.Deg2Rad * RotationSpeed, new Vector3(1.0f, 0.0f, 0.0f));
         }
 
-        //if (m_Direction < Mathf.Abs(m_ShotRotationMax) / 2)
-        //{
-            // 回転量を保存。
-            m_ShotQuat = quat;
-        //}
+        //mat = new Matrix4x4();
+        //mat.SetTRS(new Vector3(0.0f, 0.0f, 0.0f), m_ShotQuat * quat, new Vector3(1.0f, 1.0f, 1.0f));
+        //// X軸回転のみ残す。
+        //mat.SetColumn(1, new Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+        //mat.SetColumn(2, new Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+
+        //work = transform.forward;
+        //work2 = mat.MultiplyVector(transform.forward);
+        if (Quaternion.Angle(Quaternion.identity, quat) < Mathf.Abs(m_ShotRotaMax_X) / 2)
+        {
+            Debug.Log("縦回転量保存。");
+            // 縦方向の回転量を保存。
+            m_LocalShotQuat_X = quat;
+        }
+
+        m_LocalShotQuat = m_LocalShotQuat_Y * m_LocalShotQuat_X;
+
+        // 射角クォータニオンとプレイヤーのクォータニオンを乗算。
+        // 弾の射角をプレイヤーが回転した分回す。
+        m_ShotQuat = m_LocalShotQuat * transform.localRotation;
     }
 }
