@@ -138,13 +138,18 @@ public class Player : MonoBehaviour {
             // プレイヤーの向きに移動量をかけて加算。
             transform.localPosition += transform.forward * m_MoveSpeed;
             // 歩いているときの視線の上下を再現。
-            
+            Vector3 pos = transform.localPosition;
+            pos.y += Mathf.PingPong(Time.time, 0.1f);
+            transform.localPosition = pos;
         }
     }
 
     private void Battle()
     {
-
+        m_MoveSpeed = 0.0f;
+        if (!(m_NowCource[0].IsBattlle)) {
+            m_ModeState = ModeState.Move;
+        }
     }
 
     // 弾の射角調整関数。
@@ -161,22 +166,6 @@ public class Player : MonoBehaviour {
         {
             quat *= Quaternion.AngleAxis(Mathf.Deg2Rad * -RotationSpeed, new Vector3(0.0f, 1.0f, 0.0f));
         }
-        //Matrix4x4 Init = new Matrix4x4();
-        //Init.SetTRS(new Vector3(0.0f, 0.0f, 0.0f), new Quaternion(0.0f, 0.0f, 0.0f, 1.0f), new Vector3(1.0f, 1.0f, 1.0f));
-        //Init.SetColumn(0, new Vector4(0.0f, 0.0f, 0.0f, 1.0f));
-        //Init.SetColumn(1, new Vector4(0.0f, 0.0f, 0.0f, 1.0f));
-        //Init.SetColumn(2, new Vector4(0.0f, 0.0f, 0.0f, 1.0f));
-
-        //Matrix4x4 Rota = new Matrix4x4();
-        //Rota.SetTRS(new Vector3(0.0f, 0.0f, 0.0f), m_LocalShotQuat * quat, new Vector3(1.0f, 1.0f, 1.0f));
-        //// Y軸回転のみ残す。
-        //Rota.SetColumn(0, new Vector4(0.0f, 0.0f, 0.0f, 1.0f));
-        //Rota.SetColumn(2, new Vector4(0.0f, 0.0f, 0.0f, 1.0f));
-
-        //Vector3 work = Init.MultiplyVector(new Vector3(0.0f,0.0f,1.0f));
-        //Vector3 work2 = Rota.MultiplyVector(new Vector3(0.0f, 0.0f, 1.0f));
-
-        //Debug.Log(Vector3.Angle(work, work2));
         if (Quaternion.Angle(Quaternion.identity, quat) < Mathf.Abs(m_ShotRotaMax_Y) / 2)
         {
             Debug.Log("横回転量保存。");

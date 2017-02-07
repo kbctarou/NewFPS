@@ -25,6 +25,7 @@ public class CourceDef : MonoBehaviour {
     private bool m_IsBattle = false;
     public bool IsBattlle
     {
+        set { m_IsBattle = value; }
         get { return m_IsBattle; }
     }
 
