@@ -41,7 +41,11 @@ public class Player : MonoBehaviour {
     }
     [Tooltip("クリアUIのオリジナル(必ずセットせよ)")]
     [SerializeField]
-    private GameObject prefab;
+    private GameObject clearprefab;
+    [Tooltip("ゲームオーバーUIのオリジナル(必ずセットせよ)")]
+    [SerializeField]
+    private GameObject gameoverprefab;
+    private bool IsGameOver = false;    //ゲームオーバーしたか。
 
 
     // 完全に隠蔽化する変数。
@@ -136,10 +140,8 @@ public class Player : MonoBehaviour {
             // 完全にコースを外れた場合。
             {
                 // 一回だけ呼びたい処理。
-                // プレハブを取得
-                Debug.Log(prefab);
                 // プレハブからインスタンスを生成
-                GameObject.Instantiate(prefab/*, Vector3.zero, Quaternion.identity*/);
+                GameObject.Instantiate(clearprefab);
             }
             m_ModeState = ModeState.Goal;
         }
@@ -221,10 +223,13 @@ public class Player : MonoBehaviour {
 
     private void GameOver()
     {
-        // プレハブを取得
-        GameObject prefab = (GameObject)Resources.Load("Team/Prefab/GameOver");
-        // プレハブからインスタンスを生成
-        Instantiate(prefab, Vector3.zero, Quaternion.identity);
+        if(IsGameOver == false)
+        {
+            // プレハブからインスタンスを生成
+            GameObject.Instantiate(gameoverprefab);
+            IsGameOver = true;
+        }
+        
     }
 
     // 弾の射角調整関数。
