@@ -14,7 +14,7 @@ public class testplayer : MonoBehaviour {
         Vector3 pos = transform.localPosition;
 		if(Input.GetKey(KeyCode.W))
         {
-            pos.z += 0.1f;
+            pos.z += 0.8f;
             pos.y = Mathf.PingPong(Time.time, 0.1f);
             //transform.position = new Vector3(transform.position.x, Mathf.PingPong(Time.time, 0.1f), transform.position.z);
         }
