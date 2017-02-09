@@ -11,7 +11,7 @@ public class Player : MonoBehaviour {
     [Tooltip("弾発射時の音")]
     [SerializeField]
     public GameObject m_BulletSEOriginal;
-    InputComponent m_Input = new KeyBoardComponent();
+    InputComponent m_Input = null;
     [Tooltip("弾の射角の限界(横)")]
     [SerializeField]
     private float m_ShotRotaMax_Y = 45.0f;   // 弾の射角の限界(横)。
@@ -24,6 +24,9 @@ public class Player : MonoBehaviour {
     [Tooltip("歩く時の視線の上下の大きさ")]
     [SerializeField]
     private float m_WalkLength = 0.5f;
+    [Tooltip("プレイヤーが回転にかける時間")]
+    [SerializeField]
+    private float m_RotaTime = 1.0f;
     [Tooltip("最大ヒットポイント")]
     [SerializeField]
     private int m_HpMax = 1;
@@ -48,7 +51,6 @@ public class Player : MonoBehaviour {
     private Quaternion m_ShotQuat = new Quaternion();  // 弾の射角(射角にプレイヤーの回転をかけた回転)。
     private Quaternion m_PrevRotation;  // 回転補間するときに回転前のクォータニオンを保存するための入れ物。
     private Quaternion m_TargetRotation;    // 回転補間するときの目標点。
-    private float m_RotaSpeed = 0.1f;   // プレイヤーの回転速度。
     private float m_RotaCounter = 0.0f; // 回転処理に使用。
     private Vector3 m_Direction = new Vector3(0.0f, 0.0f, 1.0f);    // プレイヤーの向きベクトル。
     public Vector3 Direction
@@ -75,6 +77,7 @@ public class Player : MonoBehaviour {
         m_Direction = transform.forward;  // プレイヤーの向きベクトル取得。
         m_ShotQuat = Quaternion.FromToRotation(transform.forward, m_Direction); // 射角をプレイヤーの向きベクトルにする。
         m_Hp = m_HpMax;
+        m_Input = new KeyBoardComponent();
         //m_TargetRotation = transform.localRotation;
     }
 
@@ -159,14 +162,18 @@ public class Player : MonoBehaviour {
     {
         if (m_IsRotation)
         {
-            m_RotaCounter += m_RotaSpeed;
-            // 現在の向きから目標の向きベクトルまで回転させる。
-            transform.localRotation = Quaternion.Lerp(m_PrevRotation,m_TargetRotation, m_RotaCounter);
-            //transform.localRotation *= Quaternion.FromToRotation(transform.forward, m_Direction);
-            if (Mathf.Abs(Quaternion.Angle(transform.localRotation, m_TargetRotation)) <= 0.0001f)
+            m_RotaCounter += Time.deltaTime;
+            float offset = m_RotaCounter / m_RotaTime;
+            float angle = Quaternion.Angle(m_PrevRotation, m_TargetRotation);
+            if (offset >= 1.0f)
             {
+                transform.localRotation = m_TargetRotation;
                 // 回転終了か。
                 m_IsRotation = false;
+            }else
+            {
+                // 現在の向きから目標の向きベクトルまで回転させる。
+                transform.localRotation = m_PrevRotation * Quaternion.AngleAxis(angle * offset, Vector3.up);
             }
         }
         else
@@ -248,6 +255,16 @@ public class Player : MonoBehaviour {
         // 射角クォータニオンとプレイヤーのクォータニオンを乗算。
         // 弾の射角をプレイヤーが回転した分回す。
         m_ShotQuat = m_LocalShotQuat * transform.localRotation;
+    }
+
+    private void ShotCursor()
+    {
+        //Ray ray = new Ray();
+        //ray.origin = transform.position;
+        //ray.direction = m_ShotQuat * new Vector3(0.0f, 0.0f, 1.0f);
+        //RaycastHit hit = new RaycastHit();
+        //int LayerMask = "UI";
+        //Physics.Raycast(ray, hit, 1.0f,);
     }
 
     // ダメージを受けた時のプレイヤーの反応。
