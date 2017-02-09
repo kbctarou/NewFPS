@@ -92,10 +92,6 @@ public class Player : MonoBehaviour {
             m_IsRotation = true;
             m_RotaCounter = 0.0f;
             m_NowCourceNo = NowCource[0].CourceNo;
-            if (m_NowCource[0].IsBattlle)
-            {
-                m_ModeState = ModeState.Battle;
-            }
         }
         else if (m_NowCource.Count == 2)
         {
@@ -154,6 +150,14 @@ public class Player : MonoBehaviour {
         }
         else
         {
+            if (m_NowCource.Count == 1)
+            {
+                if (m_NowCource[0].IsBattlle)
+                {
+                    m_ModeState = ModeState.Battle;
+                    return;
+                }
+            }
             // プレイヤーの向きに移動量をかけて加算。
             transform.localPosition += transform.forward * m_MoveSpeed;
             // 歩いているときの視線の上下を再現。
