@@ -133,7 +133,7 @@ public class Enemy : MonoBehaviour {
         m_Collider = atari.AddComponent<BoxCollider>();
         m_Collider.isTrigger = true;
         m_Collider.tag = "DamageCollision";
-        Vector3 scale = new Vector3(10.0f, 30.0f, 20.0f);
+        Vector3 scale = new Vector3(10.0f, 20.0f, 40.0f);
         m_Collider.size = scale;
     }
 

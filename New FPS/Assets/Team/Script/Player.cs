@@ -41,7 +41,7 @@ public class Player : MonoBehaviour {
     }
     [Tooltip("クリアUIのオリジナル(必ずセットせよ)")]
     [SerializeField]
-    private GameObject prefab;
+    private GameObject m_Clear;
 
 
     // 完全に隠蔽化する変数。
@@ -137,9 +137,9 @@ public class Player : MonoBehaviour {
             {
                 // 一回だけ呼びたい処理。
                 // プレハブを取得
-                Debug.Log(prefab);
+                Debug.Log(m_Clear);
                 // プレハブからインスタンスを生成
-                GameObject.Instantiate(prefab/*, Vector3.zero, Quaternion.identity*/);
+                m_Clear = GameObject.Instantiate(m_Clear/*, Vector3.zero, Quaternion.identity*/);
             }
             m_ModeState = ModeState.Goal;
         }
@@ -215,8 +215,19 @@ public class Player : MonoBehaviour {
 
     private void Goal()
     {
-        // シーン切り替え。
-        SceneManager.LoadScene("ResultScene");
+        ScriptScale[] Childs = m_Clear.GetComponentsInChildren<ScriptScale>();
+        foreach(var child in Childs)
+        {
+            if (child)
+            {
+                if (child.IsScale)
+                {
+                    // シーン切り替え。
+                    SceneManager.LoadScene("ResultScene");
+                }
+                break;
+            }
+        }
     }
 
     private void GameOver()
