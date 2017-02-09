@@ -13,7 +13,7 @@ public class Enemy : MonoBehaviour {
     {
         set { m_CourceRange = value; }
     }
-
+    BoxCollider collider;
     // Use this for initialization
     void Start () {
         m_HP = 5;
@@ -122,5 +122,15 @@ public class Enemy : MonoBehaviour {
                 m_State = EnemyState.Attack;
             }
         }
+    }
+
+    void OnAttackCollisionEvent()
+    {
+        collider = gameObject.AddComponent<BoxCollider>();
+        collider.isTrigger = true;
+    }
+    void OnAttackCollisionDestroyEvent()
+    {
+        Destroy(collider);
     }
 }

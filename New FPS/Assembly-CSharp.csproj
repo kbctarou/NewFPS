@@ -67,9 +67,12 @@
      <Compile Include="Assets\Team\Script\Player.cs" />
      <Compile Include="Assets\Team\Script\TitleText.cs" />
      <Compile Include="Assets\Users\Nanjo\NewBehaviourScript1.cs" />
+     <Compile Include="Assets\Users\Nanjo\UPDOWN.cs" />
+     <Compile Include="Assets\Users\Nanjo\testplayer.cs" />
      <Compile Include="Assets\Users\Okawa\NewBehaviourScript2.cs" />
      <Compile Include="Assets\Users\Sugahara\NewBehaviourScript3.cs" />
      <None Include="Assets\Team\DownloadAssets\Stage\environment\skyshader1.0\mysky.shader" />
+     <None Include="Assets\Users\Nanjo\3D Models\Props\Weapons\Ammunition\ReadMe.txt" />
      <None Include="Assets\Team\DownloadAssets\Monster2\Shaders\specillumShader.shader" />
      <None Include="Assets\Team\DownloadAssets\Stage\environment\customTrees\Materials\TreeCreatorLeavesFastOptimized.shader" />
      <None Include="Assets\Team\DownloadAssets\Monster2\Shaders\bumpspecmap.shader" />
