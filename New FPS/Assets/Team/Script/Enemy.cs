@@ -8,16 +8,27 @@ public class Enemy : MonoBehaviour {
     public EnemyState m_State;      // エネミーの状態。
     public float m_MoveSpeed;  // 移動速度。
     GameObject m_Player = null;
-    bool m_IsAttack = false;
+    private CourceRange m_CourceRange = null;
+    public CourceRange CRange
+    {
+        set { m_CourceRange = value; }
+    }
+
     // Use this for initialization
     void Start () {
         m_HP = 5;
         m_MoveSpeed = 0.1f;
         EnemyAnimator = GetComponent<Animator>();
         m_State = EnemyState.Wait;
-        m_Player = GameObject.Find("Main Camera");
+        m_Player = GameObject.Find("Player");
     }
-	
+    private int m_NowCourceNo = -1; // 今いるコースのナンバー。
+    public int NowCourceNo
+    {
+        get { return m_NowCourceNo; }
+        set { m_NowCourceNo = value; }
+    }
+
 	// Update is called once per frame
 	void Update () {
         switch (m_State)
@@ -46,9 +57,6 @@ public class Enemy : MonoBehaviour {
                     m_State = EnemyState.Wait;
                 }
                 break;
-
-                //EnemyAnimator.SetBool("IsAttack",true);
-                break;
             case EnemyState.Falter:
                 //怯み。
                 this.SetTrigger("IsFalter");
@@ -58,15 +66,16 @@ public class Enemy : MonoBehaviour {
         }
     }
 
-        // 当たった瞬間呼ばれるコールバック関数。
-        void OnCollisionEnter(Collision collision)
+    // 当たった瞬間呼ばれるコールバック関数。
+    void OnTriggerEnter(Collider collider)
     {
-        if (collision.gameObject.GetComponent<Bullet>())
+        if (collider.gameObject.GetComponent<Bullet>())
         {
             // 当たった対象がBulletならBulletComponentがNullにはならない。
             // 暫定処理。
             if (m_HP <= 0)
             {
+                m_CourceRange.RemoveEnemyList(gameObject);
                 Destroy(gameObject);
             }
             else
@@ -99,14 +108,19 @@ public class Enemy : MonoBehaviour {
     {
         Vector3 pos = transform.localPosition;
         float dist = Vector3.Distance(m_Player.transform.localPosition, pos);
-        if (dist > 10.0f)
+        if (NowCourceNo == m_Player.GetComponent<Player>().NowCourceNo)
         {
-            m_State = EnemyState.Move;
+            // 同じコース上にいる。
+            if (dist > 20.0f)
+            {
+                // 距離が遠い。
+                m_State = EnemyState.Move;
+            }
+            else
+            {
+                // 距離が近い。
+                m_State = EnemyState.Attack;
+            }
         }
-        else
-        {
-            m_State = EnemyState.Attack;
-        }
-
     }
 }

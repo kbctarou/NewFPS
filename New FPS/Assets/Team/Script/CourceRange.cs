@@ -5,6 +5,12 @@ using System.Collections.Generic;
 public class CourceRange : MonoBehaviour {
     CourceDef m_Def = null;
     List<GameObject> m_Enemys = new List<GameObject>();
+
+    public void RemoveEnemyList(GameObject Object)
+    {
+        m_Enemys.Remove(Object);
+    }
+
     // Use this for initialization
     void Start () {
         m_Def = gameObject.transform.parent.gameObject.GetComponent<CourceDef>();
@@ -12,9 +18,12 @@ public class CourceRange : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	    if(m_Enemys.Count == 0)
+	    if(m_Enemys.Count <= 0)
         {
             m_Def.IsBattlle = false;
+        }else
+        {
+            m_Def.IsBattlle = true;
         }
 	}
     
@@ -29,6 +38,8 @@ public class CourceRange : MonoBehaviour {
         }
         else if(collider.gameObject.tag == "Enemy")
         {
+            collider.gameObject.GetComponent<Enemy>().NowCourceNo = m_Def.CourceNo;
+            collider.gameObject.GetComponent<Enemy>().CRange = this;
             m_Enemys.Add(collider.gameObject);
         }
     }
@@ -41,10 +52,6 @@ public class CourceRange : MonoBehaviour {
             Player player = collider.GetComponent<Player>();
             player.NowCource.Remove(m_Def);
             player.ProjectionCourceDef();
-        }
-        else if (collider.gameObject.tag == "Enemy")
-        {
-            m_Enemys.Remove(collider.gameObject);
         }
     }
 
