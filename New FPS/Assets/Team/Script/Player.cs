@@ -20,9 +20,24 @@ public class Player : MonoBehaviour {
     [Tooltip("移動速度")]
     [SerializeField]
     private float m_MoveSpeed = 1.0f;
+    [Tooltip("歩く時の視線の上下の大きさ")]
+    [SerializeField]
+    private float m_WalkLength = 0.5f;
+    [Tooltip("最大ヒットポイント")]
+    [SerializeField]
+    private int m_HpMax = 1;
+    public int HpMax
+    {
+        get { return m_HpMax; }
+    }
+    private int m_Hp;
+    public int Hp
+    {
+        get { return m_Hp; }
+    }
 
     // 完全に隠蔽化する変数。
-    private enum ModeState { Move = 0, Battle, Goal };
+    private enum ModeState { Move = 0, Battle, Goal ,GameOver};
     private ModeState m_ModeState = ModeState.Move;  // 移動中、バトル中。
     private bool m_IsRotation = false;  // プレイヤーが回転中か。
     private float RotationSpeed = 20.0f;    // 弾の射角の回転速度。
@@ -58,6 +73,7 @@ public class Player : MonoBehaviour {
     {
         m_Direction = transform.forward;  // プレイヤーの向きベクトル取得。
         m_ShotQuat = Quaternion.FromToRotation(transform.forward, m_Direction); // 射角をプレイヤーの向きベクトルにする。
+        m_Hp = m_HpMax;
         //m_TargetRotation = transform.localRotation;
     }
 
@@ -131,6 +147,10 @@ public class Player : MonoBehaviour {
                 // ゴール処理。
                 Goal();
                 break;
+            case ModeState.GameOver:
+                // ゴール処理。
+                GameOver();
+                break;
         }
     }
 
@@ -161,9 +181,9 @@ public class Player : MonoBehaviour {
             // プレイヤーの向きに移動量をかけて加算。
             transform.localPosition += transform.forward * m_MoveSpeed;
             // 歩いているときの視線の上下を再現。
-            Vector3 pos = transform.localPosition;
-            pos.y += Mathf.PingPong(Time.time, 0.1f);
-            transform.localPosition = pos;
+            Vector3 pos = new Vector3();
+            pos.y = Mathf.PingPong(Time.time, m_WalkLength) - (m_WalkLength / 2);
+            transform.localPosition = transform.localPosition + pos;
         }
     }
 
@@ -175,6 +195,11 @@ public class Player : MonoBehaviour {
     }
 
     private void Goal()
+    {
+
+    }
+
+    private void GameOver()
     {
 
     }
@@ -221,5 +246,25 @@ public class Player : MonoBehaviour {
         // 射角クォータニオンとプレイヤーのクォータニオンを乗算。
         // 弾の射角をプレイヤーが回転した分回す。
         m_ShotQuat = m_LocalShotQuat * transform.localRotation;
+    }
+
+    // ダメージを受けた時のプレイヤーの反応。
+    private void DamageReaction()
+    {
+
+    }
+     
+    private void OnTriggerEnter(Collider collider)
+    {
+        if (collider.tag == "Damage")
+        {
+            m_Hp--;
+            if(m_Hp <= 0)
+            {
+                m_ModeState = ModeState.GameOver;
+                return;
+            }
+            DamageReaction();
+        }
     }
 }
