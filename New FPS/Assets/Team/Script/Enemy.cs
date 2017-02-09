@@ -43,11 +43,11 @@ public class Enemy : MonoBehaviour {
             case EnemyState.Move:
                 // 発見中。
                 EnemyAnimator.SetBool("IsFind", true);
-                Vector3 pos = transform.localPosition;
+                Vector3 pos = transform.position;
                 Vector3 EnemyToPlayerVec = m_Player.transform.localPosition - pos;
                 EnemyToPlayerVec.Normalize();
                 pos += EnemyToPlayerVec * m_MoveSpeed;
-                transform.localPosition = pos;
+                transform.position = pos;
                 //プレイヤーとの距離判定。遠ければ走ってくる。近くで攻撃
                 Dist();
                 break;
