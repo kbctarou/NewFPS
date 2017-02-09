@@ -39,6 +39,10 @@ public class Player : MonoBehaviour {
     {
         get { return m_Hp; }
     }
+    [Tooltip("クリアUIのオリジナル(必ずセットせよ)")]
+    [SerializeField]
+    private GameObject prefab;
+
 
     // 完全に隠蔽化する変数。
     private enum ModeState { Move = 0, Battle, Goal ,GameOver};
@@ -130,6 +134,13 @@ public class Player : MonoBehaviour {
         else
         {
             // 完全にコースを外れた場合。
+            {
+                // 一回だけ呼びたい処理。
+                // プレハブを取得
+                Debug.Log(prefab);
+                // プレハブからインスタンスを生成
+                GameObject.Instantiate(prefab/*, Vector3.zero, Quaternion.identity*/);
+            }
             m_ModeState = ModeState.Goal;
         }
     }
@@ -210,7 +221,10 @@ public class Player : MonoBehaviour {
 
     private void GameOver()
     {
-
+        // プレハブを取得
+        GameObject prefab = (GameObject)Resources.Load("Team/Prefab/GameOver");
+        // プレハブからインスタンスを生成
+        Instantiate(prefab, Vector3.zero, Quaternion.identity);
     }
 
     // 弾の射角調整関数。
