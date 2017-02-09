@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class TitleText : MonoBehaviour {
     private const int MAX = 50;
@@ -15,10 +16,11 @@ public class TitleText : MonoBehaviour {
         Scale = transform.localScale;
         time = 0.0f;
     }
-	
-	// Update is called once per frame
-	void Update () {
-        if(time >= 0.2f)
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (time >= 0.2f)
         {
             if (i >= MAX)
             {
@@ -39,7 +41,9 @@ public class TitleText : MonoBehaviour {
         {
             time += Time.deltaTime;
         }
-       
-	    
-	}
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            SceneManager.LoadScene("GameScene");
+        }
+    }
 }

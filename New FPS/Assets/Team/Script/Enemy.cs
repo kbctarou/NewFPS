@@ -13,7 +13,7 @@ public class Enemy : MonoBehaviour {
     {
         set { m_CourceRange = value; }
     }
-    BoxCollider collider;
+    BoxCollider m_Collider;
     // Use this for initialization
     void Start () {
         m_HP = 5;
@@ -126,11 +126,17 @@ public class Enemy : MonoBehaviour {
 
     void OnAttackCollisionEvent()
     {
-        collider = gameObject.AddComponent<BoxCollider>();
-        collider.isTrigger = true;
+        GameObject atari = new GameObject();
+        atari.transform.localPosition = transform.localPosition;
+        m_Collider = atari.AddComponent<BoxCollider>();
+        m_Collider.isTrigger = true;
+        m_Collider.tag = "DamageCollision";
+        Vector3 scale = new Vector3(10.0f, 30.0f, 20.0f);
+        m_Collider.size = scale;
     }
+
     void OnAttackCollisionDestroyEvent()
     {
-        Destroy(collider);
+        Destroy(m_Collider.gameObject);
     }
 }

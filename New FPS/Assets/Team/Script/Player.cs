@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour {
     // インスペクターで触れる変数群。
@@ -196,7 +197,8 @@ public class Player : MonoBehaviour {
 
     private void Goal()
     {
-
+        // シーン切り替え。
+        SceneManager.LoadScene("ResultScene");
     }
 
     private void GameOver()
@@ -256,7 +258,7 @@ public class Player : MonoBehaviour {
      
     private void OnTriggerEnter(Collider collider)
     {
-        if (collider.tag == "Damage")
+        if (collider.tag == "DamageCollision")
         {
             m_Hp--;
             if(m_Hp <= 0)
