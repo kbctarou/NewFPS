@@ -3,27 +3,44 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class CourceRange : MonoBehaviour {
+    CourceDef m_Def = null;
+    List<GameObject> m_Enemys = new List<GameObject>();
+
+    public void RemoveEnemyList(GameObject Object)
+    {
+        m_Enemys.Remove(Object);
+    }
 
     // Use this for initialization
     void Start () {
-	
-	}
+        m_Def = gameObject.transform.parent.gameObject.GetComponent<CourceDef>();
+    }
 	
 	// Update is called once per frame
 	void Update () {
-	
+	    if(m_Enemys.Count <= 0)
+        {
+            m_Def.IsBattlle = false;
+        }else
+        {
+            m_Def.IsBattlle = true;
+        }
 	}
     
     void OnTriggerEnter(Collider collider)
     {
         if (collider.gameObject.tag == "Player")
         {
-            Debug.Log("OnTriggerEnter");
-            Debug.Log(gameObject.transform.parent.gameObject.GetComponent<CourceDef>().CourceNo);
             // 当たったものがプレイヤーならコース定義の情報を渡す。
             Player player = collider.GetComponent<Player>();
-            player.NowCource.Add(gameObject.transform.parent.gameObject.GetComponent<CourceDef>());
+            player.NowCource.Add(m_Def);
             player.ProjectionCourceDef();
+        }
+        else if(collider.gameObject.tag == "Enemy")
+        {
+            collider.gameObject.GetComponent<Enemy>().NowCourceNo = m_Def.CourceNo;
+            collider.gameObject.GetComponent<Enemy>().CRange = this;
+            m_Enemys.Add(collider.gameObject);
         }
     }
 
@@ -31,11 +48,9 @@ public class CourceRange : MonoBehaviour {
     {
         if (collider.gameObject.tag == "Player")
         {
-            Debug.Log("OnTriggerExit");
-            Debug.Log(gameObject.transform.parent.gameObject.GetComponent<CourceDef>().CourceNo);
             // 外れたものがプレイヤーならコース定義の情報を削除。
             Player player = collider.GetComponent<Player>();
-            player.NowCource.Remove(gameObject.transform.parent.gameObject.GetComponent<CourceDef>());
+            player.NowCource.Remove(m_Def);
             player.ProjectionCourceDef();
         }
     }
