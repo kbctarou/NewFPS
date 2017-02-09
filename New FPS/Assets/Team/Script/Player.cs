@@ -47,6 +47,10 @@ public class Player : MonoBehaviour {
     private GameObject gameoverprefab;
     private bool IsGameOver = false;    //ゲームオーバーしたか。
 
+    private bool IsPlayerDamage = false;    //ダメージを受けたか。
+    private float IsDamageTime = 0.0f;      //ダメージを受ける時間
+    private float DamageZyouge = 2.0f;      //ダメージを受けた時の上下
+
 
     // 完全に隠蔽化する変数。
     private enum ModeState { Move = 0, Battle, Goal ,GameOver};
@@ -212,6 +216,9 @@ public class Player : MonoBehaviour {
     {
         if (!(m_NowCource[0].IsBattlle)) {
             m_ModeState = ModeState.Move;
+        }else
+        {
+            DamageReaction();
         }
     }
 
@@ -289,7 +296,27 @@ public class Player : MonoBehaviour {
     // ダメージを受けた時のプレイヤーの反応。
     private void DamageReaction()
     {
-
+        if (IsPlayerDamage == true)
+        {
+            
+           
+            //ダメージを受けた時上下に揺れる。
+            if (IsDamageTime <= 2.0f)
+            {
+               
+                IsDamageTime += 0.1f;
+                Vector3 pos = new Vector3();
+                DamageZyouge *= -1.0f;
+                pos.y = DamageZyouge;
+                transform.localPosition = transform.localPosition + pos;
+            }
+            else
+            {
+                IsDamageTime = 0.0f;
+                IsPlayerDamage = false;
+            }
+            
+        }
     }
      
     private void OnTriggerEnter(Collider collider)
@@ -302,7 +329,7 @@ public class Player : MonoBehaviour {
                 m_ModeState = ModeState.GameOver;
                 return;
             }
-            DamageReaction();
+            IsPlayerDamage = true;
         }
     }
 }
