@@ -4,6 +4,7 @@ using System.Collections;
 public class Enemy : MonoBehaviour {
     public enum EnemyState { Wait = 0, Move ,Attack,Falter};
     public int m_HP;       // ヒットポイント。
+    public static int m_enemyDownNum = 0 ;
     Animator EnemyAnimator = null;
     public EnemyState m_State;      // エネミーの状態。
     public float m_MoveSpeed;  // 移動速度。
@@ -76,6 +77,7 @@ public class Enemy : MonoBehaviour {
             if (m_HP <= 0)
             {
                 m_CourceRange.RemoveEnemyList(gameObject);
+                //m_enemyDownNum += 100;
                 Destroy(gameObject);
             }
             else
