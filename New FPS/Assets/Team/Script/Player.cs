@@ -42,6 +42,10 @@ public class Player : MonoBehaviour {
     [Tooltip("クリアUIのオリジナル(必ずセットせよ)")]
     [SerializeField]
     private GameObject m_Clear;
+    [Tooltip("ゲームオーバーUIのオリジナル(必ずセットせよ)")]
+    [SerializeField]
+    private GameObject m_GameOver;
+    private bool IsGameOver = false;    //ゲームオーバーしたか。
 
 
     // 完全に隠蔽化する変数。
@@ -232,10 +236,15 @@ public class Player : MonoBehaviour {
 
     private void GameOver()
     {
-        // プレハブを取得
-        GameObject prefab = (GameObject)Resources.Load("Team/Prefab/GameOver");
-        // プレハブからインスタンスを生成
-        Instantiate(prefab, Vector3.zero, Quaternion.identity);
+        if(IsGameOver == false)
+        {
+            // プレハブからインスタンスを生成
+            GameObject.Instantiate(m_GameOver);
+            IsGameOver = true;
+        }else
+        {
+            SceneManager.LoadScene("TitleScene");
+        }
     }
 
     // 弾の射角調整関数。
