@@ -108,12 +108,13 @@ public class Enemy : MonoBehaviour {
 
     void Dist()
     {
-        Vector3 pos = transform.localPosition;
+        Vector3 pos = transform.position;
         float dist = Vector3.Distance(m_Player.transform.localPosition, pos);
         if (NowCourceNo == m_Player.GetComponent<Player>().NowCourceNo)
         {
+            Debug.Log(dist);
             // 同じコース上にいる。
-            if (dist > 20.0f)
+            if (dist > 2.0f)
             {
                 // 距離が遠い。
                 m_State = EnemyState.Move;
@@ -129,7 +130,7 @@ public class Enemy : MonoBehaviour {
     void OnAttackCollisionEvent()
     {
         GameObject atari = new GameObject();
-        atari.transform.localPosition = transform.localPosition;
+        atari.transform.localPosition = transform.position;
         m_Collider = atari.AddComponent<BoxCollider>();
         m_Collider.isTrigger = true;
         m_Collider.tag = "DamageCollision";
