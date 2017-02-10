@@ -95,6 +95,7 @@
     <Compile Include="Assets\Team\Script\NUM.cs" />
     <Compile Include="Assets\Team\Script\Player.cs" />
     <Compile Include="Assets\Team\Script\PlayerDamageRanp.cs" />
+    <Compile Include="Assets\Team\Script\ScriptScale.cs" />
     <Compile Include="Assets\Team\Script\TitleText.cs" />
     <Compile Include="Assets\Users\Nanjo\NewBehaviourScript1.cs" />
     <Compile Include="Assets\Users\Nanjo\UPDOWN.cs" />

@@ -18,7 +18,7 @@ public class Enemy : MonoBehaviour {
     // Use this for initialization
     void Start () {
         m_HP = 5;
-        m_MoveSpeed = 0.1f;
+        m_MoveSpeed = 0.5f;
         EnemyAnimator = GetComponent<Animator>();
         m_State = EnemyState.Wait;
         m_Player = GameObject.Find("Player");
@@ -43,11 +43,11 @@ public class Enemy : MonoBehaviour {
             case EnemyState.Move:
                 // 発見中。
                 EnemyAnimator.SetBool("IsFind", true);
-                Vector3 pos = transform.localPosition;
+                Vector3 pos = transform.position;
                 Vector3 EnemyToPlayerVec = m_Player.transform.localPosition - pos;
                 EnemyToPlayerVec.Normalize();
                 pos += EnemyToPlayerVec * m_MoveSpeed;
-                transform.localPosition = pos;
+                transform.position = pos;
                 //プレイヤーとの距離判定。遠ければ走ってくる。近くで攻撃
                 Dist();
                 break;
@@ -77,7 +77,7 @@ public class Enemy : MonoBehaviour {
             if (m_HP <= 0)
             {
                 m_CourceRange.RemoveEnemyList(gameObject);
-                //m_enemyDownNum += 100;
+                m_enemyDownNum += 100;
                 Destroy(gameObject);
             }
             else
@@ -108,12 +108,13 @@ public class Enemy : MonoBehaviour {
 
     void Dist()
     {
-        Vector3 pos = transform.localPosition;
+        Vector3 pos = transform.position;
         float dist = Vector3.Distance(m_Player.transform.localPosition, pos);
         if (NowCourceNo == m_Player.GetComponent<Player>().NowCourceNo)
         {
+            Debug.Log(dist);
             // 同じコース上にいる。
-            if (dist > 20.0f)
+            if (dist > 2.0f)
             {
                 // 距離が遠い。
                 m_State = EnemyState.Move;
@@ -129,7 +130,7 @@ public class Enemy : MonoBehaviour {
     void OnAttackCollisionEvent()
     {
         GameObject atari = new GameObject();
-        atari.transform.localPosition = transform.localPosition;
+        atari.transform.localPosition = transform.position;
         m_Collider = atari.AddComponent<BoxCollider>();
         m_Collider.isTrigger = true;
         m_Collider.tag = "DamageCollision";
