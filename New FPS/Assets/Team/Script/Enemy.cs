@@ -18,7 +18,7 @@ public class Enemy : MonoBehaviour {
     // Use this for initialization
     void Start () {
         m_HP = 5;
-        m_MoveSpeed = 0.3f;
+        m_MoveSpeed = 0.25f;
         EnemyAnimator = GetComponent<Animator>();
         m_State = EnemyState.Wait;
         m_Player = GameObject.Find("Player");
