@@ -49,7 +49,7 @@ public class Player : MonoBehaviour {
 
     private bool IsPlayerDamage = false;    //ダメージを受けたか。
     private float IsDamageTime = 0.0f;      //ダメージを受ける時間
-    private float DamageZyouge = 2.0f;      //ダメージを受けた時の上下
+    private float DamageZyouge = 0.5f;      //ダメージを受けた時の上下
 
 
     // 完全に隠蔽化する変数。
@@ -301,7 +301,7 @@ public class Player : MonoBehaviour {
             
            
             //ダメージを受けた時上下に揺れる。
-            if (IsDamageTime <= 2.0f)
+            if (IsDamageTime <= 1.0f)
             {
                
                 IsDamageTime += 0.1f;
