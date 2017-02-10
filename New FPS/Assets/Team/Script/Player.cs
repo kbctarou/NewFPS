@@ -17,7 +17,10 @@ public class Player : MonoBehaviour {
     private float m_ShotRotaMax_Y = 45.0f;   // 弾の射角の限界(横)。
     [Tooltip("弾の射角の限界(横)")]
     [SerializeField]
-    private float m_ShotRotaMax_X = 45.0f;   // 弾の射角の限界(縦)。
+    private float m_ShotRotaMax_X = 45.0f;   // 弾の射角の限界(縦)。[
+    [Tooltip("弾の射角の回転速度")]
+    [SerializeField]
+    private float RotationSpeed = 20.0f;    // 弾の射角の回転速度。
     [Tooltip("移動速度")]
     [SerializeField]
     private float m_MoveSpeed = 1.0f;
@@ -46,13 +49,18 @@ public class Player : MonoBehaviour {
     [SerializeField]
     private GameObject m_GameOver;
     private bool IsGameOver = false;    //ゲームオーバーしたか。
-
+    [Tooltip("弾の射角上に配置するカーソル(必ずセットせよ)")]
+    [SerializeField]
+    private GameObject m_ShotCursor = null;
+    public GameObject ShotCursor
+    {
+        get { return m_ShotCursor; }
+    }
 
     // 完全に隠蔽化する変数。
     private enum ModeState { Move = 0, Battle, Goal ,GameOver};
     private ModeState m_ModeState = ModeState.Move;  // 移動中、バトル中。
     private bool m_IsRotation = false;  // プレイヤーが回転中か。
-    private float RotationSpeed = 20.0f;    // 弾の射角の回転速度。
     private Quaternion m_LocalShotQuat_Y = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);  // 弾の射角(Y軸回転)。
     private Quaternion m_LocalShotQuat_X = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);  // 弾の射角(X軸回転)。
     private Quaternion m_LocalShotQuat = new Quaternion(0.0f,0.0f,0.0f,1.0f);  // 弾の射角(射角のみの回転)。
@@ -79,6 +87,12 @@ public class Player : MonoBehaviour {
         set { m_NowCourceNo = value; }
     }
 
+
+    private void OnEnable()
+    {
+        m_ShotCursor = GameObject.Instantiate<GameObject>(m_ShotCursor);
+    }
+
     // Use this for initialization
     void Start()
     {
@@ -91,10 +105,11 @@ public class Player : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        // 弾の射角調整関数。
-        ShotDirAdjustment();
         // 状況に応じた行動。
         PlayerAction();
+        // 弾の射角調整関数。
+        ShotDirAdjustment();
+
         // 弾発射処理。
         if (m_Input.IsTrigger_Space())
         {
@@ -141,7 +156,6 @@ public class Player : MonoBehaviour {
             {
                 // 一回だけ呼びたい処理。
                 // プレハブを取得
-                Debug.Log(m_Clear);
                 // プレハブからインスタンスを生成
                 m_Clear = GameObject.Instantiate(m_Clear/*, Vector3.zero, Quaternion.identity*/);
             }
@@ -239,11 +253,23 @@ public class Player : MonoBehaviour {
         if(IsGameOver == false)
         {
             // プレハブからインスタンスを生成
-            GameObject.Instantiate(m_GameOver);
+            m_GameOver = GameObject.Instantiate(m_GameOver);
             IsGameOver = true;
         }else
         {
-            SceneManager.LoadScene("TitleScene");
+            ScriptScale[] Childs = m_GameOver.GetComponentsInChildren<ScriptScale>();
+            foreach (var child in Childs)
+            {
+                if (child)
+                {
+                    if (child.IsScale)
+                    {
+                        // シーン切り替え。
+                        SceneManager.LoadScene("TitleScene");
+                    }
+                    break;
+                }
+            }
         }
     }
 
@@ -289,16 +315,23 @@ public class Player : MonoBehaviour {
         // 射角クォータニオンとプレイヤーのクォータニオンを乗算。
         // 弾の射角をプレイヤーが回転した分回す。
         m_ShotQuat = m_LocalShotQuat * transform.localRotation;
+
+        ShotCursorTransform();
     }
 
-    private void ShotCursor()
+    private void ShotCursorTransform()
     {
-        //Ray ray = new Ray();
-        //ray.origin = transform.position;
-        //ray.direction = m_ShotQuat * new Vector3(0.0f, 0.0f, 1.0f);
-        //RaycastHit hit = new RaycastHit();
-        //int LayerMask = "UI";
-        //Physics.Raycast(ray, hit, 1.0f,);
+        RaycastHit hit = new RaycastHit();
+        int layer = 1 << LayerMask.NameToLayer("ShotCursorCollision");
+        Vector3 dir = m_ShotQuat * new Vector3(0.0f, 0.0f, 1.0f);
+        dir.Normalize();
+        if (Physics.Raycast(transform.position, dir, out hit, 10000.0f, layer, QueryTriggerInteraction.UseGlobal))
+        {
+            // 衝突点を取得。
+            float dist = hit.distance;
+            Vector3 pos = transform.position + (dir * dist);
+            m_ShotCursor.transform.position = pos;
+        }
     }
 
     // ダメージを受けた時のプレイヤーの反応。
