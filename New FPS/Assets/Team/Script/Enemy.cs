@@ -18,7 +18,7 @@ public class Enemy : MonoBehaviour {
     // Use this for initialization
     void Start () {
         m_HP = 5;
-        m_MoveSpeed = 0.1f;
+        m_MoveSpeed = 0.5f;
         EnemyAnimator = GetComponent<Animator>();
         m_State = EnemyState.Wait;
         m_Player = GameObject.Find("Player");
@@ -77,7 +77,7 @@ public class Enemy : MonoBehaviour {
             if (m_HP <= 0)
             {
                 m_CourceRange.RemoveEnemyList(gameObject);
-                //m_enemyDownNum += 100;
+                m_enemyDownNum += 100;
                 Destroy(gameObject);
             }
             else

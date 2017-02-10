@@ -9,8 +9,9 @@ public class NUM : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         string t;
+        num += Enemy.m_enemyDownNum;
         t = num.ToString("00000");
-        numText.text = "SCORE :" + (t+Enemy.m_enemyDownNum);
+        numText.text = "SCORE :" + t;
 	}
 
     // Update is called once per frame
