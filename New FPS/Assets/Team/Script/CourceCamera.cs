@@ -8,7 +8,7 @@ public class CourceCamera : MonoBehaviour
     // Use this for initialization
     void Start () {
         m_Player = GameObject.Find("Player").GetComponent<Player>();
-        m_Player.GetComponent<Player>().ShotCursor.GetComponent<Billboard>().TargetCamera = this.gameObject;
+       // m_Player.GetComponent<Player>().ShotCursor.GetComponent<Billboard>().TargetCamera = this.gameObject;
 	}
 	
 	// Update is called once per frame
