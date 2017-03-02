@@ -7,7 +7,8 @@ public class Billboard : MonoBehaviour {
     private GameObject m_TargetCamera = null;
     public GameObject TargetCamera
     {
-        set { m_TargetCamera = value; }
+       
+        set { Debug.Log("カメラセット"); m_TargetCamera = value; }
     }
 
     // Use this for initialization

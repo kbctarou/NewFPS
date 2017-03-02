@@ -95,6 +95,7 @@ public class Player : MonoBehaviour {
     private void OnEnable()
     {
         m_ShotCursor = GameObject.Instantiate<GameObject>(m_ShotCursor);
+        m_ShotCursor.GetComponent<Billboard>().TargetCamera = GameObject.FindGameObjectWithTag("MainCamera");
     }
 
     // Use this for initialization
